@@ -5,13 +5,22 @@ import Loading from "./components/Loading";
 import RouterConfig from "./config/RouterConfig";
 import PageContainer from "./container/PageContainer";
 import Drawer from "@mui/material/Drawer";
-import { calculateBasket, setDrawer } from "./redux/slices/basketSlice";
+import {
+  calculateBasket,
+  setDrawer,
+  deleteFromBasket,
+} from "./redux/slices/basketSlice";
 import { useEffect } from "react";
 function App() {
   const { products, drawer, totalAmount } = useSelector(
     (store) => store.basket
   );
   const dispatch = useDispatch();
+
+  const handleRemove = (productId) => {
+    dispatch(deleteFromBasket({ id: productId }));
+    dispatch(calculateBasket());
+  };
 
   useEffect(() => {
     dispatch(calculateBasket());
@@ -30,7 +39,7 @@ function App() {
           open={drawer}
           onClose={() => dispatch(setDrawer())}
         >
-          {products &&
+          {products.length > 0 ? (
             products.map((product) => {
               return (
                 <div
@@ -65,12 +74,16 @@ function App() {
                       color: "white",
                       width: "50px",
                     }}
+                    onClick={() => handleRemove(product.id)}
                   >
                     Sil
                   </button>
                 </div>
               );
-            })}
+            })
+          ) : (
+            <p>Sepetiniz boş.</p>
+          )}
           <div className="tutar">
             <p>Toplam tutar: {totalAmount}</p>
           </div>

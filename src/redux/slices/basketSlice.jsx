@@ -47,12 +47,20 @@ export const basketSlice = createSlice({
       state.totalAmount = 0;
       state.products &&
         state.products.map((product) => {
-          state.totalAmount += product.price * product.count;
+          state.totalAmount += product.price * (product.count || 1);
         });
+    },
+    deleteFromBasket: (state, action) => {
+      const deletedProducts = state.products.filter(
+        (product) => product.id !== action.payload.id
+      );
+      state.products = deletedProducts;
+      writeFromBasketToStorage(state.products);
     },
   },
 });
 
-export const { addToBasket, setDrawer, calculateBasket } = basketSlice.actions;
+export const { addToBasket, setDrawer, calculateBasket, deleteFromBasket } =
+  basketSlice.actions;
 
 export default basketSlice.reducer;
